@@ -7,6 +7,7 @@
 
 umask 002
 
+CONFIG_FILE=$1
 WORKFLOW_DIR="workflow"
 
 # execute snakemake
@@ -16,7 +17,7 @@ snakemake --reason \
     --keep-going \
     --printshellcmds \
     --config workflow_dir=${WORKFLOW_DIR} \
-    --configfile ${WORKFLOW_DIR}/config.yaml \
+    --configfile ${CONFIG_FILE} \
     --local-cores 4 \
     --jobs 500 \
     --max-jobs-per-second 1 \

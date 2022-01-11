@@ -1,0 +1,12 @@
+proband: HG002
+parent1: HG001
+parent2: HG003
+
+tmpdir: '/scratch'
+
+ref:
+  shortname: "GRCh38"
+  fasta: "path/to/human_GRCh38_no_alt_analysis_set.fasta"
+  index: "/path/to/human_GRCh38_no_alt_analysis_set.fasta.fai"
+  tr_bed: "/path/to/human_GRCh38_no_alt_analysis_set.trf.bed"
+  
