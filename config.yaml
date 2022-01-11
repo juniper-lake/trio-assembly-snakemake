@@ -1,0 +1,12 @@
+proband: cmh001807-01
+parent1: cmh001807-02
+parent2: cmh001807-03
+
+tmpdir: '/scratch'
+
+ref:
+  shortname: "GRCh38"
+  fasta: "/pbi/collections/100humans/reference/human_GRCh38_no_alt_analysis_set.fasta"
+  index: "/pbi/collections/100humans/reference/human_GRCh38_no_alt_analysis_set.fasta.fai"
+  tr_bed: "/pbi/collections/100humans/reference/human_GRCh38_no_alt_analysis_set.trf.bed"
+  
