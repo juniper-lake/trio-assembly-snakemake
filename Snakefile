@@ -5,7 +5,7 @@ from collections import defaultdict
 
 
 shell.prefix(f"set -o pipefail; umask 002; export TMPDIR={config['tmpdir']}; export SINGULARITY_TMPDIR={config['tmpdir']}; ")  # set g+w
-
+workflow_dir = config['workflow_dir']
 
 # cohort will be provided at command line with `--config cohort=$COHORT`
 proband = config['proband']

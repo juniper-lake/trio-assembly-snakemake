@@ -1,6 +1,6 @@
 rule samtools_fasta:
-    input: f"reads/{proband}/{{movie}}.bam"
-    output: f"results/{proband}/fasta/{proband}/{{movie}}.fasta"
+    input: f"reads/{proband}/{{movie}}.ccs.bam"
+    output: temp(f"results/{proband}/fasta/{proband}/{{movie}}.fasta")
     log: f"results/{proband}/logs/{proband}/{{movie}}.fasta.log"
     threads: 4
     conda: "envs/samtools.yaml"
@@ -8,19 +8,25 @@ rule samtools_fasta:
     shell: "(samtools fasta -@ 3 {input} > {output}) > {log} 2>&1"
 
 
-rule samtools_fasta_sr:
+rule samtools_sort_sr:
     input: f"reads/{{sample}}/{{sample}}.bam"
+    output: temp(f"results/{proband}/fasta/{{sample}}/{{sample}}.sorted.bam")
+    log: f"results/{proband}/logs/{{sample}}.sort.log"
+    threads: 4
+    conda: "envs/samtools.yaml"
+    params: prefix="/scratch/{sample}"
+    shell: "(samtools sort -n -@ 3 -T {params.prefix} -o {output} {input}) > {log} 2>&1"
+
+
+rule samtools_fasta_sr:
+    input: rules.samtools_sort_sr.output
     output: 
-        r1=f"results/{proband}/fasta/{{sample}}/{{sample}}.R1.fasta",
-        r2=f"results/{proband}/fasta/{{sample}}/{{sample}}.R2.fasta"
+        r1=temp(f"results/{proband}/fasta/{{sample}}/{{sample}}.R1.fasta"),
+        r2=temp(f"results/{proband}/fasta/{{sample}}/{{sample}}.R2.fasta")
     log: f"results/{proband}/logs/{{sample}}.fasta.log"
     threads: 4
     conda: "envs/samtools.yaml"
-    shell: 
-        """
-        (samtools collate -u -O {input} \
-        | samtools fasta -1 {output.r1} -2 {output.r2} -0 /dev/null -s /dev/null -n) > {log} 2>&1
-        """
+    shell: "(samtools fasta {input} -@ 3 -1 {output.r1} -2 {output.r2} -0 /dev/null -s /dev/null -n) > {log} 2>&1"
 
 
 rule yak_count_sr:
@@ -34,7 +40,7 @@ rule yak_count_sr:
     params: "-b37"
     threads: 32
     message: "Executing {rule}: Counting k-mers in {input}."
-    shell: "(yak count -t {threads} {params} -o {output} <(zcat {input.r1}) <(zcat {input.r2})) > {log} 2>&1"
+    shell: "(yak count -t {threads} {params} -o {output} <(cat {input.r1}) <(cat {input.r2})) > {log} 2>&1"
 
 
 rule hifiasm_assemble:
@@ -105,7 +111,7 @@ rule asm_stats:
     benchmark: f"results/{proband}/benchmarks/asm_stats/{{sample}}.asm.dip.{{infix}}.fasta.tsv"
     conda: "envs/k8.yaml"
     message: "Executing {rule}: Calculating stats for {input}."
-    shell: f"(k8 workflow/scripts/calN50/calN50.js -f {config['ref']['index']} {{input}} > {{output}}) > {{log}} 2>&1"
+    shell: f"(k8 {workflow_dir}/calN50/calN50.js -f {config['ref']['index']} {{input}} > {{output}}) > {{log}} 2>&1"
 
 
 rule align_hifiasm:

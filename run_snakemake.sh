@@ -8,7 +8,7 @@
 umask 002
 
 CONFIG_FILE=$1
-WORKFLOW_DIR="workflow"
+WORKFLOW_DIR="workflow_sr_trio_assembly"
 
 # execute snakemake
 snakemake --reason \
