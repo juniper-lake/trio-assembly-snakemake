@@ -7,8 +7,16 @@
 
 umask 002
 
-CONFIG_FILE=$1
-WORKFLOW_DIR="workflow_sr_trio_assembly"
+TRIO_ID=$1
+WORKFLOW_DIR="workflow_trio_assembly"
+OUT_DIR="output_trio_assembly"
+mkdir -p ${OUT_DIR}/${TRIO_ID}/
+LOCKFILE=${OUT_DIR}/${TRIO_ID}/snakemake.lock
+
+# add lockfile to directory to prevent multiple simultaneous jobs
+lockfile -r 0 ${LOCKFILE} || exit 1
+trap "rm -f ${LOCKFILE}; exit" SIGINT SIGTERM ERR EXIT
+
 
 # execute snakemake
 snakemake --reason \
@@ -16,8 +24,8 @@ snakemake --reason \
     --nolock \
     --keep-going \
     --printshellcmds \
-    --config workflow_dir=${WORKFLOW_DIR} \
-    --configfile ${CONFIG_FILE} \
+    --config workflow_dir=${WORKFLOW_DIR} output_dir=${OUT_DIR} trio_id=${TRIO_ID} \
+    --configfile config.yaml \
     --local-cores 4 \
     --jobs 500 \
     --max-jobs-per-second 1 \

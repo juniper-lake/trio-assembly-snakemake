@@ -2,3 +2,6 @@ __default__:
   partition: compute
   extra: ''
   out: cluster_logs/slurm-%x-%j-%N.out
+
+align_hifiasm:
+  extra: '--mem-per-cpu=8G'

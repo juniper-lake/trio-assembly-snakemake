@@ -1,12 +1,32 @@
-proband: HG002
-parent1: HG001
-parent2: HG003
+# the file "config.yaml" should be in the working directory, one step above workflow
 
-tmpdir: '/scratch'
+# default "results"
+# should be specified in sbatch script if using lockfile
+output_dir: 'output_trio_assembly'
+# default "reads"
+input_dir: 'input_trio_assembly'
+tmpdir: '/tmp'
+
+# if parental short reads are in CRAM format instead of BAM
+cram_ref: "/pbi/dept/appslab/datasets/hgsvc/srwgs/GRCh38_full_analysis_set_plus_decoy_hla.fa"
 
 ref:
   shortname: "GRCh38"
-  fasta: "path/to/human_GRCh38_no_alt_analysis_set.fasta"
-  index: "/path/to/human_GRCh38_no_alt_analysis_set.fasta.fai"
-  tr_bed: "/path/to/human_GRCh38_no_alt_analysis_set.trf.bed"
-  
+  fasta: "/pbi/collections/100humans/reference/human_GRCh38_no_alt_analysis_set.fasta"
+  index: "/pbi/collections/100humans/reference/human_GRCh38_no_alt_analysis_set.fasta.fai"
+  tr_bed: "/pbi/collections/100humans/reference/human_GRCh38_no_alt_analysis_set.trf.bed"
+
+
+# run HG002 trio with parental hifi reads
+HG002:
+  child: HG002
+  father: HG003
+  mother: HG004
+  parent_reads: hifi
+
+
+# run HG002 trio with parental short reads (default)
+HG002_sr:
+  child: HG002
+  father: HG003
+  mother: HG004
