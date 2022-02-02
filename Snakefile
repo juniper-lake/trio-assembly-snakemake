@@ -61,7 +61,9 @@ for infile in Path(input_dir).glob('**/*'):
     sr_bam_match = bamcram_sr_pattern.search(str(infile))
     if sr_bam_match:
         sr_dict[sr_bam_match.group('sample')].append(sr_bam_match.group('movie'))
-   
+for s in sr_dict.keys():
+    print(s)
+    print(sr_dict[s])
 # get list of unique movie names for each sample, ignoring redundancy between ubam and fastq
 hifi_dict = {sample:list(set(list(ubam_dict[sample].keys()) + list(fastq_dict[sample].keys()))) for sample in list(ubam_dict.keys()) + list(fastq_dict.keys())}
 
@@ -85,9 +87,9 @@ if 'assembly' in config['targets']:
         for infix in ['hap1.p_ctg', 'hap2.p_ctg']])
 # assembly alignments
 if 'alignment' in config['targets']:
-    targets.extend([f"{output_dir}/{trio_id}/hifiasm/{child}.asm.{ref}.{suffix}"
+    targets.extend([f"{output_dir}/{trio_id}/hifiasm/{child}.{hap}.{ref}.{suffix}"
+        for hap in ['hap1', 'hap2']
         for suffix in ['bam', 'bam.bai']])
-
 
 localrules: all, md5sum
 
