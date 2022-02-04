@@ -1,9 +1,9 @@
-ruleorder: seqtk_fastq_to_fasta > samtools_fasta_sr > samtools_sort_sr_bam > samtools_sort_sr_cram
+ruleorder: seqtk_fastq_to_fasta_sr > samtools_fasta_sr > samtools_sort_sr_bam > samtools_sort_sr_cram
 
     
 rule samtools_sort_sr_cram:
     input: 
-        cram = f"{input_dir}/{{sample}}/paired_end/{{prefix}}.cram",
+        cram = lambda wildcards: sr_dict[wildcards.sample][".cram"][wildcards.prefix],
         ref = config['cram_ref']
     output: f"{output_dir}/{trio_id}/fasta/{{sample}}/{{prefix}}.sorted.bam"
     log: f"{output_dir}/{trio_id}/logs/yak_sr/{{sample}}.{{prefix}}.samtools_sort_sr_cram.log"
@@ -20,7 +20,7 @@ rule samtools_sort_sr_cram:
 
 
 rule samtools_sort_sr_bam:
-    input: f"{input_dir}/{{sample}}/paired_end/{{prefix}}.bam"
+    input: lambda wildcards: sr_dict[wildcards.sample][".bam"][wildcards.prefix],
     output: f"{output_dir}/{trio_id}/fasta/{{sample}}/{{prefix}}.sorted.bam"
     log: f"{output_dir}/{trio_id}/logs/yak_sr/{{sample}}.{{prefix}}.samtools_sort_sr_bam.log"
     threads: 4
@@ -29,9 +29,9 @@ rule samtools_sort_sr_bam:
 
 
 rule seqtk_fastq_to_fasta_sr:
-    input: f"{input_dir}/{{sample}}/paired_end/{{prefix}}.R{{read}}.fastq.gz"
-    output: f"{output_dir}/{trio_id}/fasta/{{sample}}/{{prefix}}.R{{read}}.fasta"
-    log: f"{output_dir}/{trio_id}/logs/yak_sr/{{sample}}.{{prefix}}.R{{read}}.seqtk_fastq_to_fasta_sr.log"
+    input: lambda wildcards: sr_dict[wildcards.sample][".fastq.gz"][wildcards.prefix],
+    output: f"{output_dir}/{trio_id}/fasta/{{sample}}/{{prefix}}.fasta"
+    log: f"{output_dir}/{trio_id}/logs/yak_sr/{{sample}}.{{prefix}}.seqtk_fastq_to_fasta_sr.log"
     conda: "envs/seqtk.yaml"
     shell: "(seqtk seq -A {input} > {output}) > {log} 2>&1"
 
@@ -39,8 +39,8 @@ rule seqtk_fastq_to_fasta_sr:
 rule samtools_fasta_sr:
     input: f"{output_dir}/{trio_id}/fasta/{{sample}}/{{prefix}}.sorted.bam"
     output: 
-        r1=f"{output_dir}/{trio_id}/fasta/{{sample}}/{{prefix}}.R1.fasta",
-        r2=f"{output_dir}/{trio_id}/fasta/{{sample}}/{{prefix}}.R2.fasta"
+        r1=f"{output_dir}/{trio_id}/fasta/{{sample}}/{{prefix}}_R1.fasta",
+        r2=f"{output_dir}/{trio_id}/fasta/{{sample}}/{{prefix}}_R2.fasta"
     log: f"{output_dir}/{trio_id}/logs/yak_sr/{{sample}}.{{prefix}}.samtools_fasta_sr.log"
     threads: 4
     conda: "envs/samtools.yaml"
@@ -49,8 +49,8 @@ rule samtools_fasta_sr:
 
 rule yak_count_sr:
     input: 
-        r1=lambda wildcards: expand(f"{output_dir}/{trio_id}/fasta/{wildcards.sample}/{{prefix}}.R1.fasta", prefix=sr_dict[wildcards.sample]),
-        r2=lambda wildcards: expand(f"{output_dir}/{trio_id}/fasta/{wildcards.sample}/{{prefix}}.R2.fasta", prefix=sr_dict[wildcards.sample])
+        r1=lambda wildcards: expand(f"{output_dir}/{trio_id}/fasta/{wildcards.sample}/{{prefix}}_R1.fasta", prefix=sr_prefixes[wildcards.sample]),
+        r2=lambda wildcards: expand(f"{output_dir}/{trio_id}/fasta/{wildcards.sample}/{{prefix}}_R2.fasta", prefix=sr_prefixes[wildcards.sample])
     output: f"{output_dir}/{trio_id}/yak/{{sample}}.yak"
     log: f"{output_dir}/{trio_id}/logs/yak_sr/{{sample}}.yak_count_sr.log"
     conda: "envs/yak.yaml"

@@ -10,10 +10,10 @@ umask 002
 TRIO_ID=$1
 WORKFLOW_DIR="workflow_trio_assembly"
 OUT_DIR="output_trio_assembly"
-mkdir -p ${OUT_DIR}/${TRIO_ID}/
-LOCKFILE=${OUT_DIR}/${TRIO_ID}/snakemake.lock
 
 # add lockfile to directory to prevent multiple simultaneous jobs
+mkdir -p ${OUT_DIR}/${TRIO_ID}/
+LOCKFILE=${OUT_DIR}/${TRIO_ID}/snakemake.lock
 lockfile -r 0 ${LOCKFILE} || exit 1
 trap "rm -f ${LOCKFILE}; exit" SIGINT SIGTERM ERR EXIT
 

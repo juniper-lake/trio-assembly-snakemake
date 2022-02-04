@@ -1,13 +1,6 @@
-# the file "config.yaml" should be in the working directory, one step above workflow
-
-# default "results"
-# should be specified in sbatch script if using lockfile
-output_dir: 'output_trio_assembly'
-# default "reads"
-input_dir: 'input_trio_assembly'
 tmpdir: '/tmp'
 
-# if parental short reads are in CRAM format instead of BAM
+# only required if parental short reads are in CRAM format
 cram_ref: "/pbi/dept/appslab/datasets/hgsvc/srwgs/GRCh38_full_analysis_set_plus_decoy_hla.fa"
 
 ref:
@@ -17,16 +10,39 @@ ref:
   tr_bed: "/pbi/collections/100humans/reference/human_GRCh38_no_alt_analysis_set.trf.bed"
 
 
-# run HG002 trio with parental hifi reads
-HG002:
-  child: HG002
-  father: HG003
-  mother: HG004
-  parent_reads: hifi
-
-
 # run HG002 trio with parental short reads (default)
 HG002_sr:
-  child: HG002
-  father: HG003
-  mother: HG004
+  child:
+    id: HG002
+    reads:
+      - /path/to/HG002/HiFi/reads.bam # 1+ bam and/or fastq.gz files
+      - /path/to/HG002/HiFi/reads.fastq.gz # 1+ bam and/or fastq.gz files
+  father:
+    id: HG003
+    reads:
+      - /path/to/HG003/paired_end/reads_R1.fastq.gz # 1+ bam and/or cram and or fastq.gz (set of R1/R2) files
+      - /path/to/HG003/paired_end/reads_R2.fastq.gz # 1+ bam and/or cram and or fastq.gz (set of R1/R2) files
+  mother:
+    id: HG004
+    reads:
+      - /path/to/HG004/paired_end/reads.bam # 1+ bam and/or cram and or fastq.gz (set of R1/R2) files
+      - /path/to/HG004/paired_end/reads.cram # 1+ bam and/or cram and or fastq.gz (set of R1/R2) files
+
+# run HG002 trio with parental hifi
+HG002_hifi:
+  child:
+    id: HG002
+    reads:
+      - /path/to/HG002/HiFi/reads.bam # 1+ bam and/or fastq.gz files
+      - /path/to/HG002/HiFi/reads.fastq.gz # 1+ bam and/or fastq.gz files
+  father:
+    id: HG003
+    reads:
+      - /path/to/HG003/HiFi/reads.bam # 1+ bam and/or fastq.gz files
+      - /path/to/HG003/HiFi/reads.fastq.gz # 1+ bam and/or fastq.gz files
+  mother:
+    id: HG004
+    reads:
+      - /path/to/HG004/HiFi/reads.bam # 1+ bam and/or fastq.gz files
+      - /path/to/HG004/HiFi/reads.fastq.gz # 1+ bam and/or fastq.gz files
+  parent_reads: hifi

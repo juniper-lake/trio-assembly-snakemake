@@ -1,8 +1,7 @@
 ruleorder: samtools_fasta > seqtk_fastq_to_fasta
 
-
 rule samtools_fasta:
-    input: lambda wildcards: ubam_dict[wildcards.sample][wildcards.prefix]
+    input: lambda wildcards: hifi_dict[wildcards.sample]['.bam'][wildcards.prefix]
     output: temp(f"{output_dir}/{trio_id}/fasta/{{sample}}/{{prefix}}.fasta")
     log: f"{output_dir}/{trio_id}/logs/trio_hifiasm/{{sample}}.{{prefix}}.samtools_fasta.log"
     threads: 4
@@ -11,7 +10,7 @@ rule samtools_fasta:
 
 
 rule seqtk_fastq_to_fasta:
-    input: lambda wildcards: fastq_dict[wildcards.sample][wildcards.prefix]
+    input: lambda wildcards: hifi_dict[wildcards.sample]['.fastq.gz'][wildcards.prefix]
     output: temp(f"{output_dir}/{trio_id}/fasta/{{sample}}/{{prefix}}.fasta")
     log: f"{output_dir}/{trio_id}/logs/trio_hifiasm/{{sample}}.{{prefix}}.seqtk_fastq_to_fasta.log"
     conda: "envs/seqtk.yaml"
@@ -20,7 +19,7 @@ rule seqtk_fastq_to_fasta:
 
 rule hifiasm:
     input: 
-        fasta = lambda wildcards: expand(f"{output_dir}/{trio_id}/fasta/{child}/{{movie}}.fasta", movie=hifi_dict[child]),
+        fasta = lambda wildcards: expand(f"{output_dir}/{trio_id}/fasta/{child}/{{movie}}.fasta", movie=hifi_prefixes[child]),
         pat_yak = f"{output_dir}/{trio_id}/yak/{father}.yak",
         mat_yak = f"{output_dir}/{trio_id}/yak/{mother}.yak"
     output:
