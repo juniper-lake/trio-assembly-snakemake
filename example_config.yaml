@@ -1,13 +1,15 @@
 tmpdir: '/tmp'
 
+
 # only required if parental short reads are in CRAM format
 cram_ref: "/pbi/dept/appslab/datasets/hgsvc/srwgs/GRCh38_full_analysis_set_plus_decoy_hla.fa"
 
+
+# required for assembly stats and alignment
 ref:
   shortname: "GRCh38"
   fasta: "/pbi/collections/100humans/reference/human_GRCh38_no_alt_analysis_set.fasta"
   index: "/pbi/collections/100humans/reference/human_GRCh38_no_alt_analysis_set.fasta.fai"
-  tr_bed: "/pbi/collections/100humans/reference/human_GRCh38_no_alt_analysis_set.trf.bed"
 
 
 # run HG002 trio with parental short reads (default)
@@ -27,6 +29,7 @@ HG002_sr:
     reads:
       - /path/to/HG004/paired_end/reads.bam # 1+ bam and/or cram and or fastq.gz (set of R1/R2) files
       - /path/to/HG004/paired_end/reads.cram # 1+ bam and/or cram and or fastq.gz (set of R1/R2) files
+
 
 # run HG002 trio with parental hifi
 HG002_hifi:

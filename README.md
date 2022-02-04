@@ -8,26 +8,51 @@
   - HiFi in `.bam` or `.fastq.gz`
   - Paired end reads in `.bam`, `.cram`, or (`.R1.fasq.gz` + `.R2.fasq.gz`)
 
-## Getting started
+### Directory structure within basedir
 
-Clone workflow from github into directory named `workflow_trio_assembly` and move into directory.
+```text
+.
+├── cluster_logs # slurm stderr/stdout logs
+├── config.yaml # customized copy of example_config.yaml
+├── output_trio_assembly # output directory
+│   └── <trio_id>
+│       ├── fasta
+│       ├── hifiasm
+│       ├── logs
+│       └── yak
+└── workflow_trio_assembly # clone of this repo
+    ├── calN50
+    └── rules
+        └── envs
+```
 
-```git
+## Run the pipeline
+
+```bash
+# clone workflow from github into directory named `workflow_trio_assembly`
 git clone --recursive git@github.com:juniper-lake/trio-assembly-snakemake.git workflow_trio_assembly
-cd workflow_trio_assembly
-```
 
-Create directory for cluster logs to be stored.
-
-```bash
+# create directory for cluster logs to be stored.
 mkdir cluster_logs
-```
 
-Create `config.yaml` based on `example_config.yaml`.
-
-```bash
+# create `config.yaml` based on `example_config.yaml`.
 cp workflow_trio_assembly/example_config.yaml config.yaml
+
+# adjust paths in Snakefile and sbatch script as necessary
+
+# create conda environment to run snakemake workflow.
+conda create --prefix ./conda_env --channel bioconda --channel conda-forge lockfile==0.12.2 python=3 snakemake mamba
+
+# activate conda environment. **This conda env must be activated each time you run the workflow.**
+conda activate ./conda_env
+
+# run workflow by submitting sbatch script with <trio_id>.
+sbatch workflow_trio_assembly/run_snakemake.sh <trio_id>
 ```
+
+## Configuration
+
+See `example_config.yaml` for an example configuration file.
 
 Trio relationships and input files are defined in `config.yaml` as follows:
 
@@ -48,43 +73,6 @@ Trio relationships and input files are defined in `config.yaml` as follows:
     id: <mother_id>
     reads:
       - <reads_file>
-```
-
-Create conda environment to run snakemake workflow.
-
-```bash
-conda create -n snakemake -c bioconda -c conda-forge lockfile==0.12.2 python=3 snakemake mamba
-```
-
-Activate conda environment. **This conda env must be activated each time you run the workflow.**
-
-```bash
-conda activate snakemake
-```
-
-Run workflow by submitting sbatch script with <trio_id>.
-
-```bash
-sbatch workflow_trio_assembly/run_snakemake.sh <trio_id>
-```
-
-### Directory structure within basedir
-
-The workflow creates the directory `output_trio_assembly` where results are deposited. 
-
-```bash
-.
-├── cluster_logs
-├── output_trio_assembly
-│   └── HG002_sr
-│       ├── fasta
-│       ├── hifiasm
-│       ├── logs
-│       └── yak
-└── workflow_trio_assembly
-    ├── calN50
-    └── rules
-        └── envs
 ```
 
 ## To Do
