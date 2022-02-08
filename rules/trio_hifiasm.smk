@@ -20,8 +20,8 @@ rule seqtk_fastq_to_fasta:
 rule hifiasm:
     input: 
         fasta = lambda wildcards: expand(f"{output_dir}/{trio_id}/fasta/{child}/{{movie}}.fasta", movie=hifi_prefixes[child]),
-        pat_yak = f"{output_dir}/{trio_id}/yak/{father}.yak",
-        mat_yak = f"{output_dir}/{trio_id}/yak/{mother}.yak"
+        pat_yak = f"{output_dir}/{trio_id}/yak/{config[trio_id]['father']['id']}.yak",
+        mat_yak = f"{output_dir}/{trio_id}/yak/{config[trio_id]['mother']['id']}.yak"
     output:
         temp(f"{output_dir}/{trio_id}/hifiasm/{{sample}}.asm.dip.hap1.p_ctg.gfa"),
         f"{output_dir}/{trio_id}/hifiasm/{{sample}}.asm.dip.hap1.p_ctg.lowQ.bed",
@@ -42,8 +42,8 @@ rule hifiasm:
     conda: "envs/hifiasm.yaml"
     params: 
         prefix = f"{output_dir}/{trio_id}/hifiasm/{{sample}}.asm",
-        hap1 = father,
-        hap2 = mother,
+        hap1 = config[trio_id]['father']['id'],
+        hap2 = config[trio_id]['mother']['id'],
         extras = hifiasm_param
     threads: 48
     shell:
@@ -86,8 +86,8 @@ rule asm_stats:
 
 rule yak_trioeval:
     input: 
-        pat_yak = f"{output_dir}/{trio_id}/yak/{father}.yak",
-        mat_yak = f"{output_dir}/{trio_id}/yak/{mother}.yak",
+        pat_yak = f"{output_dir}/{trio_id}/yak/{config[trio_id]['father']['id']}.yak",
+        mat_yak = f"{output_dir}/{trio_id}/yak/{config[trio_id]['mother']['id']}.yak",
         fasta = f"{output_dir}/{trio_id}/hifiasm/{child}.asm.dip.{{infix}}.fasta.gz",
     output: f"{output_dir}/{trio_id}/hifiasm/{child}.asm.dip.{{infix}}.trioeval.txt"
     log: f"{output_dir}/{trio_id}/logs/trio_hifiasm/{child}.{{infix}}.yak_trioeval.log"
