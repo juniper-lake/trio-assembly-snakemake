@@ -51,7 +51,7 @@ rule hifiasm:
             (
                 hifiasm -o {params.prefix} -t {threads} {params.extras} \
                     -1 {input.pat_yak} -2 {input.mat_yak} {input.fasta} \
-                && (echo -e "hap1\t{params.hap1}\nhap2\t{params.hap2}" > {output_dir}/{trio_id}/hifiasm/{wildcards.sample}.asm.key.txt) \
+                && (echo -e "hap1\t{params.hap1}\tp\nhap2\t{params.hap2}\tm" > {output_dir}/{trio_id}/hifiasm/{wildcards.sample}.asm.key.txt) \
             ) > {log} 2>&1
             """
     

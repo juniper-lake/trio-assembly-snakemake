@@ -67,6 +67,7 @@ for i in sr_prefixes.keys():
 # rules to include
 include: 'rules/trio_hifiasm.smk'
 include: yak_rule
+include: 'rules/yak_triobin.smk'
 
 
 # build a list of targets
@@ -85,6 +86,10 @@ if 'alignment' in config['targets']:
     targets.extend([f"{output_dir}/{trio_id}/hifiasm/{child}.{hap}.{ref}.{suffix}"
         for hap in ['hap1', 'hap2']
         for suffix in ['bam', 'bam.bai']])
+# triobin kid reads
+if 'triobin' in config['targets']:
+    targets.extend([f"{output_dir}/{trio_id}/yak/{child}.{movie}.triobin.txt"
+        for movie in hifi_prefixes[child]])
 
 
 localrules: all, md5sum
